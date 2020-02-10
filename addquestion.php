@@ -1,6 +1,7 @@
 <?php
 include("config/db_connect.php");
 $question = $answer = $selected = '';
+static $last_id;
 
 /*get the all question type then echo to html select*/
 $sql = "SELECT * FROM question_types;";
@@ -32,44 +33,78 @@ $errors = array('question'=>'','answer'=>'');
 		echo "there is some error";
 		}
 
-		/*INSERT QUESTION AND ANSWER TO DATABASE*/
+		/*INSERT QUESTION, ANSWER AND CHOICE TO DATABASE*/
 		else{
 			include("config/db_connect.php");
-			$question = mysqli_real_escape_string($conn,$_POST['question']);
-			$answer = mysqli_real_escape_string($conn,$_POST['answer']);
+			$question = $_POST['question'];
+			$post_answers = $_POST['answer'];
+			$answers = array();
+			foreach ($post_answers as $answer) {
+				$answers[] = mysqli_real_escape_string($conn,$answer);
+			};
+			print_r($answers);
 
+
+
+
+			//get the last array key of the variable answers
+			$last_answer = array_key_last($answers);
+			
+
+
+			$question = mysqli_real_escape_string($conn,$question);
+			//$answer = mysqli_real_escape_string($conn,$answers);
 			$sql1 = "INSERT INTO questions(question,question_type) VALUES ('$question','$selected')";
 			
 
 			if(mysqli_query($conn,$sql1)){
 
 				$last_id = mysqli_insert_id($conn);
-				echo "$last_id";
-				$sql2 = "INSERT INTO answers(question_id,answer) VALUES ($last_id,'$answer')";
+				$sql2 = "INSERT INTO answers(question_id,answer) VALUES";
+				foreach ($answers as $key => $value) {
+					$key != $last_answer ? $sql2 .= "('$last_id','$value')," : $sql2 .= "('$last_id','$value')";
+				};
 				if(mysqli_query($conn,$sql2)){
 					echo "Successfully inserted";
-					header('Location:'.$_SERVER['PHP_SELF']);
+					//header('Location:'.$_SERVER['PHP_SELF']);
 				}
 				else{
 					echo "2ndquery error".mysqli_error($conn);
 				}		
 			}
+
+			/*Inserting choice*/
+
+			if(!empty($_POST['choice'])){
+				$choices = $_POST['choice'];
+				$last_choice = array_key_last($choices);
+				$sqlchoice = "INSERT INTO choices(question_id,choice) VALUES";
+				foreach ($choices as $key => $choice) {
+					$last_choice != $key ? $sqlchoice .="($last_id,'$choice')," : $sqlchoice .= "($last_id,'$choice')";
+				};
+					
+				$querys = mysqli_query($conn,$sqlchoice);
+			}
 			else{
 				echo "query error".mysqli_error($conn);
 			}
 			
-			
+			header('Location:'.$_SERVER['PHP_SELF']);
 		}
+		
+	};
+
+	function escapeArray($conn,$a){
+		return mysqli_escape_string($conn,$a);
 	}
-
-
 ?>
+
 
 <!DOCTYPE html>
 <html>
 <section>
 		<h4>Add Question</h4>
-		<form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="POST">
+		<form id="add-qanda" action="<?php echo $_SERVER['PHP_SELF'] ?>" method="POST">
 			<label>Question:</label>
 			<textarea name="question"></textarea>
 			<div class="red-text"><?php echo htmlspecialchars($errors['question']); ?></div>
@@ -90,9 +125,19 @@ $errors = array('question'=>'','answer'=>'');
 			<br>
 			<br>
 			<br>
-			<label for="answers">Answer:</label>
-			<textarea name="answer"></textarea>
-			<div class=""><?php echo htmlspecialchars($errors['answer']); ?></div>
+			<!-- ADD ASNWER CONTAINER -->
+			<div id="answer-container">	
+				<div class="ans-elem-cont">
+					<label for="answers">Answer:</label>
+					<textarea class="answer" name="answer[]"></textarea>
+					<input class="btn-add-moreanswer" type="button" name="" value="+">
+					<div class=""><?php echo htmlspecialchars($errors['answer']); ?></div>
+				</div>
+			</div>	
+
+			<!-- ADD CHOICES CONTAINER	 -->
+			<input type="button" class="btn-add-choice" value="Add Choice">
+			<div id="choices-container"></div>
 			<div class="center">
 				<input type="submit" name="submit" value="submit" class="bt- brand z-depth-0">
 			</div>
