@@ -5,6 +5,10 @@ private $totalcorrectans;
 private $correct_ans;
 private $quizresults;
 
+public function __construct(){
+
+}
+
 public function computeQuizResult($userdata,$dbresults){
 $totalquestion = $this->totalQuestion($dbresults);
 $userdataIndex  = 0;

@@ -20,7 +20,7 @@
 	if(isset($_GET['quiz'])){
 		$limitquestion = 1;
 		if(isset($_GET['limit'])){
-			if(is_numeric($_GET['limit']) && $_GET['limit'] < 100){
+			if(is_numeric($_GET['limit']) && $_GET['limit'] >= 1){
 				$limitquestion = $_GET['limit'];
 			}
 		};

@@ -1,6 +1,7 @@
 <?php
+declare(strict_types = 1);
 include('config/db_connect.php');
-include './includes/autoloader.inc.php';
+include 'includes/autoloader.inc.php';
 
 if(isset($_POST['answers'])){
 	
