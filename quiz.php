@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html>
 <?php include('templates/header.php') ?>
-
+<label for="limit">Number of Question:</label>
+<input type="text" name="limit" id="question-limit">
 <input type="button" id="create" name="create" value="Create">
 <!-- <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="POST">
 	

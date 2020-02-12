@@ -10,7 +10,9 @@ console.log(question.quizContainer);
 
 createBtn.addEventListener('click',(e)=>{
 	e.preventDefault();
-	var getquiz = get('create_quiz.php?quiz');
+	let limitQuestion = document.getElementById('question-limit').value;
+	console.log(limitQuestion);
+	var getquiz = get('create_quiz.php?quiz&limit='+limitQuestion);
 	getquiz.then((data)=>{
 		console.log(data);
 		let dataArrayVal = Object.values(data);

@@ -18,12 +18,19 @@
 	//print_r($peopletoja);
 /*	$peopleArrObject =array()*/
 	if(isset($_GET['quiz'])){
+		$limitquestion = 1;
+		if(isset($_GET['limit'])){
+			if(is_numeric($_GET['limit']) && $_GET['limit'] < 100){
+				$limitquestion = $_GET['limit'];
+			}
+		};
+
 		$sql = "SELECT question_id,question,question_type,answer_id
 		 FROM questions q 
 			LEFT JOIN answers a 
 			USING(question_id) 
 			#ORDER BY RAND()
-			LIMIT 1";
+			LIMIT $limitquestion";
 		$query = mysqli_query($conn,$sql);
 		$result = mysqli_fetch_all($query,MYSQLI_ASSOC);
 		//print_r($result);
