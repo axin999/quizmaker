@@ -32,7 +32,6 @@ $correctcount = 0;
 			   		$userdataIndex = $i;
 			   		
 			};
-			//echo strcasecmp("suck"," suck");
 			$noSpacedbAnswer = preg_replace('/\s+/', '',$dbresult['answer']);
 			$noSpaceUserAnswer = preg_replace('/\s+/', '',$userdata[$userdataIndex]['user_answer']);
 			if((strcasecmp($noSpacedbAnswer,$noSpaceUserAnswer)!== 0)){
