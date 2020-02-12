@@ -23,7 +23,7 @@
 			LEFT JOIN answers a 
 			USING(question_id) 
 			#ORDER BY RAND()
-			#LIMIT 10";
+			LIMIT 1";
 		$query = mysqli_query($conn,$sql);
 		$result = mysqli_fetch_all($query,MYSQLI_ASSOC);
 		//print_r($result);

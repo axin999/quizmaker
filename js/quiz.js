@@ -66,7 +66,7 @@ createBtn.addEventListener('click',(e)=>{
 				console.log(answersString);
 
 
-				let result = post('quiz_result.php','answers='+answersString);
+				let result = post('quiz_result.php','answers='+encodeURIComponent(answersString));
 				result.then((data)=>{
 					question.showresults(data);
 					console.log('data',data);

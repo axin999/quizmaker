@@ -1,13 +1,15 @@
 <?php
-include('includes/quiz.inc.php');
 include('config/db_connect.php');
-
+include './includes/autoloader.inc.php';
 
 if(isset($_POST['answers'])){
 	
-
-	$data = json_decode(stripslashes($_POST['answers']),true);
-
+	//$datastr = parse_str($_POST['answers']);
+	$data = json_decode($_POST['answers'],true);
+	//$data = json_decode(stripslashes($_POST['answers']),true);
+	//$data = json_decode($_POST['answers'],true);
+	
+	//$data = json_decode($_POST['useranswer'],true);
 	
 	$composite_id = "";
 
@@ -59,9 +61,12 @@ $new2 = array_column($data, 'question_id');*/
 //print_r($results);
 
 if(!isset($_POST['answers'])){
-	
-
-	$data = json_decode(stripslashes($_POST['useranswer']),true);
+	//echo $_POST['useranswer'];
+	//$mySerial = serialize($_POST['useranswer']);
+	$data = json_decode($_POST['useranswer'],true);
+	//print_r($data);
+	//$data = json_decode($mySerial,true);
+	//print_r($data);
 
 	
 	$composite_id = "";
@@ -75,20 +80,21 @@ if(!isset($_POST['answers'])){
 		 	 };
 
 	};
-
+	//echo "$composite_id";
 	$sql = "SELECT question,answer_id,answer FROM questions AS q
 			JOIN answers AS a USING (question_id)
 			WHERE (a.question_id,a.answer_id) IN ($composite_id)";
 	$query = mysqli_query($conn,$sql);
 	$results = mysqli_fetch_all($query,MYSQLI_ASSOC);
 	
+	//print_r($results);
 	
 	//echo json_encode($results);
 	//echo strcmp($results[0]['answer'], "hypertext Preprocessor");
-	for($i = 0; $i < count($data); $i++){
+/*	for($i = 0; $i < count($data); $i++){
 		$quizresult[] = array_diff($data[$i],$results[$i]);
 	};
-	//print_r($quizresult);
+	print_r($quizresult);*/
 	//$serializechecker = array_map('serialize', $data);
 	//print_r($serializechecker);
 	$quiz = new Quiz();

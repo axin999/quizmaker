@@ -9,7 +9,7 @@
 	
 </form> -->
 <div id="quiz-container"></div>
-<form method="POST" action="quiz_result.php">
+<form method="POST" action="quiz_result.php" enctype="application/x-www-form-urlencoded">
 	<input id="testing" type="textarea" name="useranswer" value="">
 	<input type="submit" name="answers">
 </form>
