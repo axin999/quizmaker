@@ -2,7 +2,7 @@
 spl_autoload_register('myAutoloader');
 
 function myAutoloader($className){
-	$url = $_SERVER['HTTP_HOST'].$$_SERVER['REQUEST_URI'];
+	$url = $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 	
 
 	if (strpos($url, 'includes') !== false) {
@@ -13,8 +13,8 @@ function myAutoloader($className){
 	}
 
 	$extension = ".class.php";
-	$fullpath = $path.$className.$extension;
+	$fullpath = $path.str_replace('\\', '/', $className).$extension;
 	
-	require_once $path.$className.$extension;
+	require_once $fullpath;
 };
 
