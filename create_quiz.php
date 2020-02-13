@@ -1,22 +1,10 @@
 <?php
-	include('./config/db_connect.php');
+	include "includes/autoloader.inc.php";
 	session_start();
 	session_unset();
 	
 
-	//print_r($result);
-	$personObj = new person();
-	//echo $personObj->fname = 'gilpogi';
-	$people = array(
-		array("name"=>"gil","midlename"=>"bajog","lastname"=>"villar"),
-		array("name"=>"naruto","midlename"=>"namikaze","lastname"=>"uzumaki"),
-		array("name"=>"yato","midlename"=>"neko","lastname"=>"godofwar"),
-		array("name"=>"joseph","midlename"=>"oraoraora","lastname"=>"joestar"),
-		array("name"=>"dio","midlename"=>"nani","lastname"=>"zawarudo")
-	);
-	$peopletojava = json_encode($people);
-	//print_r($peopletoja);
-/*	$peopleArrObject =array()*/
+
 	if(isset($_GET['quiz'])){
 		$limitquestion = 1;
 		if(isset($_GET['limit'])){
@@ -25,18 +13,10 @@
 			}
 		};
 
-		$sql = "SELECT question_id,question,question_type,answer_id
-		 FROM questions q 
-			LEFT JOIN answers a 
-			USING(question_id) 
-			#ORDER BY RAND()
-			LIMIT $limitquestion";
-		$query = mysqli_query($conn,$sql);
-		$result = mysqli_fetch_all($query,MYSQLI_ASSOC);
-		//print_r($result);
-		$grp_question = group_by('question_id',$result);
-		//print_r($grp_question);
-		echo json_encode($grp_question);
+
+		$quiz = new Quiz();
+
+		$quiz->createQuiz();
 	};
 	
 	if(isset($_POST['quiz'])){
@@ -78,15 +58,3 @@ function group_by($key,$data) {
 
     return $result;
 };
-	class quiz{
-		var $question;
-		var $answer;
-		var $choices;
-		public function create_quiz(){}
-	};
-	class person {
-		var $fname;
-		var $middlename;
-		var $lastname;
-	}
-

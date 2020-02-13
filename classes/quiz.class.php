@@ -1,6 +1,6 @@
 <?php
 
-class Quiz {
+class Quiz extends Dbh{
 private $totalcorrectans;
 private $correct_ans;
 private $quizresults;
@@ -81,6 +81,32 @@ public function mergeReresult($result1,$result2){
 	return json_encode($result1);
 }	
 public function createQuiz(){
+	$sql = "SELECT question_id,question,question_type,answer_id
+			FROM questions q 
+			LEFT JOIN answers a 
+			USING(question_id)";
+	$stmt = $this->connect()->prepare($sql);
+	$stmt->execute();
+
+	$result = $stmt->fetchAll();
+	//print_r($result);
+	//$grp_question('question_id',$result);
 	
+
+	echo json_encode($this->group_by('question_id',$result));
+}
+
+public function group_by($key,$data) {
+    $result = array();
+
+    foreach($data as $val) {
+        if(array_key_exists($key, $val)){
+            $result[$val[$key]][] = $val;
+        }else{
+            $result[""][] = $val;
+        }
+    }
+
+    return $result;
 }
 }
