@@ -45,6 +45,14 @@
 		var $lastname;
 	}
 
+
+
+$suckme = 1;
+	echo $suckme."<br>";
+$wuzzy = new $suckme(2);
+	echo "$wuzzy";
+
+
 ?>
 <!DOCTYPE html>
 <html>

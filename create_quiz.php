@@ -1,7 +1,9 @@
 <?php
 	
 
-	include "includes/autoloader.inc.php";
+	//include "includes/autoloader.inc.php";
+	include "config/db_connect.php";
+	include "includes/quiz.inccc.php";
 	session_start();
 	session_unset();
 	
