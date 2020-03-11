@@ -7,13 +7,16 @@
  	{
  	}
 
- 	public function render($viewName){
+ 	public function view($viewName){
  		$viewArray = explode('/', $viewName);
  		$viewString = implode(DS, $viewArray);
  		if(file_exists(ROOT. DS . 'app' . DS .'views' . DS . $viewString. '.php')){
  			include(ROOT . DS . 'app' . DS .'views' . DS . $viewString . '.php');
  			include(ROOT . DS . 'app' . DS .'views' . DS . 'layouts' . DS . $this->_layout . '.php');
- 		}else{
+ 		}if(!strpos($viewName, 'Controller')){
+ 			echo 'sucker';
+ 		}
+ 		else{
  			die("The view \'" .$viewName ."\'does not exist");
  		}
  	}

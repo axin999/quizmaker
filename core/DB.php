@@ -41,6 +41,58 @@ class DB{
 		return $this;
 	}
 
+	protected function _read($table, $params=[]){
+		$conditionString = '';
+		$bind = [];
+		$order ='';
+		$limit = '';
+
+		if(isset($params['conditions'])){
+			if (is_array(($params['conditions']))) {
+				foreach ($params['conditions'] as $condition) {
+					$condistion .= '' . $condition . ' AND ';
+				}
+				$conditionString = trim($conditionString);
+				$conditionString = rtrim($conditionString,' AND ');
+			}else{
+				$conditionString = $params['conditions'];
+			}
+			if($conditionString != ''){
+				$conditionString = ' WHERE '. $conditionString;
+			}
+
+			//bind
+			if(array_key_exists('bind', $params)){
+				$bind = $params['bind'];
+			}
+			if(array_key_exists('order', $params)){
+				$order = ' ORDER BY ' . $params['order'];
+			}
+			if(array_key_exists('limit', $params)){
+				$limit = ' LIMIT '. $params['limit'];
+			}
+			$sql = "SELECT * FROM {$table}{$conditionString}{$order}{$limit}";
+			//dnd($sql);
+			if($this->query($sql,$bind)){
+				if(!count($this->_results)) return false;
+				return true;
+			}
+			return false;
+		}
+	}
+	public function find($table, $params =[]){
+		if($this->_read($table,$params)){
+			return $this->results();
+		}
+		return false;
+	}
+	public function findFirst($table, $params=[]){
+		if($this->_read($table,$params)){
+			return $this->$first();
+		}
+		return false;
+	}
+
 	public function insert($table, $fields = []){
 		$fieldString ='';
 		$valueString = '';
@@ -89,13 +141,13 @@ class DB{
 	}
 
 	public function results(){
-		return $this->_results
+		return $this->_results;
 	}
 	public function first(){
 		return (!empty($this->_results))? $this->_results[0] : [];
 	}
 	public function count(){
-		return $this->_count
+		return $this->_count;
 	}
 	public function lastID(){
 		return $this->_lastInsertID;

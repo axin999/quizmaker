@@ -9,10 +9,12 @@ class Home extends Controller
 			//die('welcome to home controller this is the index action');
 			$dbs = DB::getInstance();
 			$fields = [
-				'question' => 'from my mvc3'
+				'conditions' => 'question_id = ?',
+				'bind' => [154]
 			];
-			$question_typesQ = $dbs->delete('questions',183);
-			$this->view->render('home/index');
+			$question_typesQ = $dbs->find('questions',$fields);
+			//dnd($question_typesQ);
+			$this->view->view('home/index');
 		}
 
 	}
