@@ -14,7 +14,7 @@ class Home extends Controller
 			];
 			$question_typesQ = $dbs->find('questions',$fields);
 			//dnd($question_typesQ);
-			$this->view->view('home/index');
+			$this->view->render('home/index');
 		}
 
 	}

@@ -21,6 +21,7 @@ class DB{
 
 	}
 	public function query($sql, $params = []){
+		//dnd($params);
 		$this->_error = false;
 		if($this->_query = $this->_pdo->prepare($sql)){
 			$x = 1;
@@ -88,7 +89,7 @@ class DB{
 	}
 	public function findFirst($table, $params=[]){
 		if($this->_read($table,$params)){
-			return $this->$first();
+			return $this->first();
 		}
 		return false;
 	}

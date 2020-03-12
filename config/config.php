@@ -8,3 +8,7 @@ define('DEFAULT_CONTROLLER', 'Home');// default controller if there isnt one in 
 define('DEFAULT_LAYOUT', 'default');//
 define('PROJECT_ROOT', '/Quizmaker/');
 define('SITE_TITLE', 'Axin MVC Framework');
+
+define('CURRENT_USER_SESSION_NAME', 'jakalawussy'); //session name for mogged in user
+define('REMEMBER_ME_COOKIE_NAME', 'jakalawwetsai'); // cookie name for loged in user
+define('REMEMBER_ME_COOKIE_EXPIRY', 644800);// time in seconds for remeber me cookie to libe (30 days)

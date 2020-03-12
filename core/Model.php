@@ -3,18 +3,21 @@ class Model{
 	protected $_db, $_table, $_modelName, $_softDelete = false, $_columnNames = [];
 	public $id;
 
-	public function __construct(){
-		$this->_db = DB::getInstance()
+	public function __construct($table){
+		$this->_db = DB::getInstance();
 		$this->_table = $table;
 		$this->_setTableColumns();
-		$this->_modelName = str_replace('', '',ucwords(str_replace('_',' ',$this->_table)));
+		$this->_modelName = ucwords($table);
+		//$this->_modelName = str_replace(' ', '',ucwords(str_replace('_',' ',$this->_table)));
+		//dnd($this->_modelName);
 	}
 
-	protected fucntion _setTableColumns(){
+	protected function _setTableColumns(){
 		$columns = $this->get_columns();
 		foreach ($columns as $column) {
+			$columnName = $column->Field;
 			$this->columnNames[] = $column->Field;
-			$this->{$columnName} =null
+			$this->{$columnName} = null;
 		}
 	}
 
@@ -27,7 +30,7 @@ class Model{
 		$resultsQuery = $this->_db->find($this->_table, $params);
 		foreach ($resultsQuery as $result) {
 			$obj = new $this->_modelName($this->_table);
-			$obj-> new $this->_modelName($this->_table);
+			$obj = new $this->_modelName($this->_table);
 			$results[] = $obj;
 		}
 		return $results;
@@ -36,10 +39,11 @@ class Model{
 	public function findFirst($params =[]){
 		$resultsQuery = $this->_db->findFirst($this->_table,$params);
 		$result = new $this->_modelName($this->_table);
-		$result->populateObjData($resultsQuery);
+		$result->populateObjData($resultsQuery);;
+		return $result;
 	}
 	public function findById($id){
-		return $this->findFirst()
+		return $this->findFirst();
 	}
 	// save is used for  shorcut inserting or updating
 	public function save(){
@@ -55,7 +59,7 @@ class Model{
 		}
 	}
 	public function insert($fields){
-		inf(empty($fields)) return false;
+		if(empty($fields)) return false;
 		return $this->_db->insert($this->table, $fields);
 	}
 	public function update($id, $fields){
@@ -66,7 +70,7 @@ class Model{
 		if($id == '') return false;
 		$id = ($id == '') ? $this->id : $id;
 		if($this->_softDelete){
-			return $this->update($id, ['deleted'] => 1);
+			return $this->update($id, ['deleted' => 1]);
 		}
 		return $this->_db->delete($this->_table, $id);
 	}
@@ -93,7 +97,7 @@ class Model{
 	}
 	protected function populateObjData($result){
 		foreach($result as $key => $val){
-			$this->$key = val;
+			$this->$key = $val;
 		}
 
 	}
