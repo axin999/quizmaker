@@ -26,6 +26,23 @@ class Router{
 			die('method'.$controller_name.' does not exist in the controller');
 		}
 	}
+	public static function redirect($location){
+		if(!headers_sent()){
+			header('Location: '.PROJECT_ROOT.$location);
+		}else{
+			echo <<< EOT
+			<script type="text/javascript">
+			window.location.heref="{PROJECT_ROOT}.{$location}"
+			</script>
+			<noscript>
+			<meta http-equi="refresh" content="0;url="{$location}">
+			</noscript>
+
+EOT;
+			exit;
+
+		}
+	}
 	public static function get(){
 
 	}

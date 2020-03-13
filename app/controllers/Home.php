@@ -6,6 +6,7 @@ class Home extends Controller
 			parent::__construct($controller, $action);
 		}
 		public function indexAction(){
+			//dnd($_SESSION);
 			//die('welcome to home controller this is the index action');
 			$dbs = DB::getInstance();
 			$fields = [

@@ -18,7 +18,7 @@ class Users extends Model{
 				$u = $this->_db->findFirst('users',['conditions'=>'username=?','bind'=>[$user]]);
 			}
 			if($u){
-				foreach ($u as $key => $value) {
+				foreach ($u as $key => $val) {
 					$this->$key = $val;
 				}
 			}
@@ -28,8 +28,16 @@ class Users extends Model{
 		return $user = $this->findFirst(['conditions'=>'username = ?', 'bind'=>[$username]]);
 		//dnd($user);
 	}
+
+	public static function currentLoggedInUser(){
+		if(!isset(self::$currentLoggedInUser) && Session::exists(CURRENT_USER_SESSION_NAME)){
+				$u = new Users((int)Session::get(CURRENT_USER_SESSION_NAME));
+				self::$currentLoggedInUser = $u;
+		} 
+		return self::$currentLoggedInUser;
+	}
 	public function login($rememberMe = false){
-		Session::set($this->_sessionName, $this->id);
+		Session::set($this->_sessionName, $this->user_id);
 		if($rememberMe){
 			$hash = md5(uniqid()+ rand(0,100));
 			$user_agent = Session::uagent_no_version();
@@ -38,5 +46,15 @@ class Users extends Model{
 			$this->_db->query("DELETE FROM user_sessions WHERE user_id = ? AND user_agent = ?", [$this->id, $user_agent]);
 			$this->db->insert('user_session', $fields);
 		}
+	}
+	public function logout(){
+		$user_agent = Session::uagent_no_version();
+		$this->_db->query("DELETE FROM user_session WHERE user_id = ? AND user_agent =?", [$this->id, $user_agent]);
+		Session::delete(CURRENT_USER_SESSION_NAME);
+		if(Cookie::exists(REMEMBER_ME_COOKIE_NAME)){
+			Cookie::delete(REMEMBER_ME_COOKIE_NAME);
+		}
+		self::$currentLoggedInUser = null;
+		return true;
 	}
 }

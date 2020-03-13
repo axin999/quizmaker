@@ -10,8 +10,8 @@ class Session{
 		return $_SESSION[$name] = $value;
 	}
 	public static function delete($name){
-		if(seld::exists($name)){
-			$unset($_SESSION[$name]);
+		if(self::exists($name)){
+			unset($_SESSION[$name]);
 		}
 	}
 	public static function uagent_no_version(){

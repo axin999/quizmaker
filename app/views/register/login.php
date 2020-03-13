@@ -3,8 +3,10 @@
 <?php $this->start('body'); ?>
 
 <div class="container col-md-6 col-md-offset-3 fluid">
-	<h3 class="text-center">Log In</h3>
+	
 	<form class="form" action="<?=PROJECT_ROOT?>register/login" method="POST">
+		<div class=""><?= $this->displayErrors ?></div>
+		<h3 class="text-center">Log In</h3>
 		<div class="form-group">
 			<label for="username">Username</label>
 			<input type="text" name="username" id="username" value="" class="form-control">
