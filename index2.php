@@ -24,9 +24,13 @@ function autoload($className){
 spl_autoload_register('autoload');
 session_start();
 
+
 // this will create an array for the path info of the server 
 $url = isset($_SERVER['PATH_INFO']) ? explode('/', ltrim($_SERVER['PATH_INFO'], '/')) : [];
 /*phpinfo();dnd();*/
+if(!Session::exists(CURRENT_USER_SESSION_NAME) && Cookie::exists(REMEMBER_ME_COOKIE_NAME)){
+	Users::loginUserFromCookie();
+}
 $db = DB::getInstance();
 Router::route($url);
 //dnd($url);

@@ -95,6 +95,7 @@ class DB{
 	}
 
 	public function insert($table, $fields = []){
+		//dnd($fields);
 		$fieldString ='';
 		$valueString = '';
 		$values = [];
@@ -133,7 +134,7 @@ class DB{
 	}
 
 	public function delete($table,$id){
-		$sql = "DELETE FROM {$table} WHERE question_id = {$id}";
+		$sql = "DELETE FROM {$table} WHERE session_id = {$id}";
 		if(!$this->query($sql)->error()){
 			return true;
 		}

@@ -23,12 +23,19 @@ class Validate{
 							}
 							break;
 
+						case 'max':
+						if(strlen($value) > $rule_value){
+							$matchDisplay = $items[$rule_value]['display'];
+							$this->addError(["{$display} must be maximun of {$rule_value} character.",$item]);
+						}
+							break;
+
 						case 'matches':
 						if($value != $source[$rule_value]){
 							$matchDisplay = $items[$rule_value]['display'];
-							$this->addError(["{$matchDisplay} and {$display} must match.",$item]);
+							$this->addError(["{$matchDisplay} and {$display} must match.", $item]);
 						}
-							break;
+						break;
 
 						case 'unique':
 							$check = $this->_db->query("SELECT {$item} FROM {$rule_value} WHERE {$item} = ?", [$value]);
