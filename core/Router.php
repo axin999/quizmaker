@@ -3,8 +3,8 @@ class Router{
 	public static function route($url){
 	
 		//Controller
-		$controller  = (isset($url[0]) && $url[0] != '') ? ucwords($url[0]) : DEFAULT_CONTROLLER;
-		$controller_name = $controller;
+		$controller  = (isset($url[0]) && $url[0] != '') ? ucwords($url[0]).'Controller' : DEFAULT_CONTROLLER.'Controller';
+		$controller_name = str_replace('Controller', '', $controller);
 		array_shift($url);
 
 
@@ -17,7 +17,8 @@ class Router{
 		//acl check
 		$grantAccess = self::hasAccess($controller_name, $action_name);
 		if(!$grantAccess){
-			$controller_name = $controller = ACCESS_RESTRICTED;
+			$controller = ACCESS_RESTRICTED.'Controller';
+			$controller_name = ACCESS_RESTRICTED;
 			$action = 'indexAction';
 		}
 

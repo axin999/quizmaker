@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="<?= PROJECT_ROOT?>css/bootstrap/bootstrap.min.css" crossorigin="anonymous">
     <script src="<?=PROJECT_ROOT ?>js/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
 
-    <title><?= $this->setSiteTitle('pogi gil'); ?></title>
+    <title><?= $this->setTitle(); ?></title>
     <?php $this->content('head') ?>
   </head>
   <body>

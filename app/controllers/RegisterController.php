@@ -1,5 +1,5 @@
 <?php
-	class Register extends Controller{
+	class RegisterController extends Controller{
 		public function __construct(){
 			parent::__construct($controller,$action);
 			$this->load_model('Users');
@@ -87,7 +87,6 @@
 					'matches' =>'password'
 				]				
 			]);
-				//echo $this->pussy['fname'] = 1;
 				if($validation->passed()){
 					$newUser = new Users();
 					$newUser->registerNewUser($_POST);

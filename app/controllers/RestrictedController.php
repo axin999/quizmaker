@@ -2,7 +2,7 @@
 	/**
 	 * 
 	 */
-	class Restricted extends Controller{
+	class RestrictedController extends Controller{
 		
 		public function __construct()
 		{

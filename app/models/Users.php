@@ -65,6 +65,7 @@ class Users extends Model{
 			return $user;			
 		}
 	}
+	
 	public function logout(){
 		//$user_agent = Session::uagent_no_version();
 		$userSession = UserSessions::getFromCookie();

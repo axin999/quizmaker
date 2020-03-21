@@ -5,6 +5,11 @@
 		echo "</pre>";
 		die();
 	}
+	function dnl($data){
+		echo "<pre>";
+		var_dump($data);
+		echo "</pre>";
+	}
 	function pr($data){
 		echo "<pre>";
 		print_r($data);
