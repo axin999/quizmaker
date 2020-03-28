@@ -1,10 +1,15 @@
 <?php
+namespace App\Models;
+use Core\Model;
+use Core\validators\RequiredValidator;
+use Core\validators\MaxValidator;
 	/**
 	 * 
 	 */
 	class Contacts extends Model
 	{
-		//public $deleted = 0;
+		public $id,$user_id,$fname,$lname,$email,$address,$address2,$city,$state,$zip;
+		public $home_phone,$cell_phone,$work_phone,$deleted = 0;
 
 		public function __construct()
 		{
@@ -12,18 +17,13 @@
 			parent::__construct($table);
 			$this->_softDelete = true;
 		}
-		public static $addValidation = [
-			'fname' => [
-				'display' => 'First name',
-				'required' => true,
-				'max' => 155
-			],
-			'lname' => [
-				'display' => 'First name',
-				'required' => true,
-				'max' => 155
-			]
-		];
+
+		public function validator(){
+			$this->runValidation(new RequiredValidator($this,['field'=>'fname','msg'=>'First Name is required.']));
+			$this->runValidation(new RequiredValidator($this,['field'=>'lname','msg'=>'last Name is required.']));
+			$this->runValidation(new MaxValidator($this,['field'=>'fname','msg'=>'First Name must be less than 156 characters','rule'=>155]));
+			$this->runValidation(new MaxValidator($this,['field'=>'lname','msg'=>'Last Name must be less than 156 characters','rule'=>155]));
+		}
 
 		public function findAllByUserId($user_id, $params=[]){
 			$conditions = [

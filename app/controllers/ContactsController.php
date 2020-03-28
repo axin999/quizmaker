@@ -1,4 +1,11 @@
 <?php
+namespace App\Controllers;
+use Core\Controller;
+use Core\Session;
+use Core\Router;
+use App\Models\Contacts;
+use App\Models\Users;
+use Core\HP;
 
 /**
  * 
@@ -15,51 +22,48 @@ class ContactsController extends Controller
 	}
 
 	public function indexAction(){
-		$contacts = $this->ContactsModel->findAllByUserId(currentUser()->user_id,['order'=>'lname, fname']);//dnd($contacts);
+		$contacts = $this->ContactsModel->findAllByUserId(Users::currentUser()->user_id,['order'=>'lname, fname']);
+		//HP::dnd($contacts);
 		$this->view->contacts = $contacts;
 		$this->view->render('contacts/index');
 	}
 
 	public function addAction(){
 		$contact = new Contacts();
-		$validation = new Validate();
-		if($_POST){
-			$contact->assign($_POST);
-			$validation->check($_POST, Contacts::$addValidation);
-			if($validation->passed()){
-				$contact->user_id = currentUser()->user_id;
-				$contact->deleted = 0;
-				$contact->save();
-				Router::redirect('contacts');
-			}
-			
+		if($this->request->isPost()){
+			$this->request->csrfCheck();
+			$contact->assign($this->request->get());
+				$contact->user_id = Users::currentUser()->user_id;
+				if($contact->save()){
+					Router::redirect('contacts');
+				}
 		}
 		$this->view->contact = $contact;
-		$this->view->displayErrors = $validation->displayErrors();
+		$this->view->displayErrors = $contact->getErrorMessages();
 		$this->view->postAction = PROJECT_ROOT . 'contacts' . '/' . 'add';
 		$this->view->render('contacts/add'); 
 	}
 
 	public function editAction($id){
-		$contact = $this->ContactsModel->findByIdAndUserId((int)$id,currentUser()->user_id);
+		$contact = $this->ContactsModel->findByIdAndUserId((int)$id,Users::currentUser()->user_id);
 		if(!$contact) Router::redirect('contacts/edit');
-		$validation = new Validate();
-		if($_POST){
-			$contact->assign($_POST);
-			$validation->check($_POST,Contacts::$addValidation);
-			if($validation->passed()){
-				$contact->save();
-				Router::redirect('contacts');
-			}
+		if($this->request->isPost()){
+			$this->request->csrfCheck();
+			$contact->assign($this->request->get());
+				if($contact->save()){
+					Router::redirect('contacts');
+				}
+				
+			
 		}
-		$this->view->displayErrors = $validation->displayErrors();
+		$this->view->displayErrors = $contact->getErrorMessages();
 		$this->view->contact = $contact;
 		$this->view->postAction = PROJECT_ROOT . 'contacts' . '/' . 'edit' . DS . $contact->id;
 		$this->view->render('contacts/edit');
 	}
 
 	public function detailsAction($id){
-		$contact = $this->ContactsModel->findByIdAndUserId((int)$id,currentUser()->user_id);
+		$contact = $this->ContactsModel->findByIdAndUserId((int)$id,Users::currentUser()->user_id);
 		if(!$contact){
 			Router::redirect('contacts');
 		}
@@ -68,9 +72,10 @@ class ContactsController extends Controller
 	}
 
 	public function deleteAction($id){
-		$contact = $this->ContactsModel->findByIdAndUserId((int)$id,currentUser()->user_id);
+		$contact = $this->ContactsModel->findByIdAndUserId((int)$id,Users::currentUser()->user_id);
 		if($contact){
 			$contact->delete();
+			Session::addMsg('success','Contact has been deleted.');
 		}
 			Router::redirect('contacts');
 	}

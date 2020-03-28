@@ -1,4 +1,8 @@
 <?php
+namespace Core;
+use Core\Session;
+use App\Models\Users;
+
 class Router{
 	public static function route($url){
 	
@@ -25,7 +29,7 @@ class Router{
 
 		//params
 		$queryParams = $url;
-
+		$controller = 'App\Controllers\\'.$controller;
 		$dispatch = new $controller($controller_name,$action);
 		//dnd($dispatch);
 		if(method_exists($controller, $action)){
@@ -62,7 +66,7 @@ EOT;
 
 		if(Session::exists(CURRENT_USER_SESSION_NAME)){
 			$current_user_acls[] = "LoggedIn";	
-			foreach (currentUser()->acls() as $a) {
+			foreach (Users::currentUser()->acls() as $a) {
 				$current_user_acls[] = $a;
 			}
 		}

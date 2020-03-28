@@ -1,4 +1,7 @@
-<!doctype html>
+<?php
+use Core\Session;
+?>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <!-- Required meta tags -->
@@ -7,6 +10,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="<?= PROJECT_ROOT?>css/bootstrap/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="<?= PROJECT_ROOT?>css/custom.css" crossorigin="anonymous">
     <script src="<?=PROJECT_ROOT ?>js/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
 
     <title><?= $this->setTitle(); ?></title>
@@ -15,6 +19,7 @@
   <body>
     <?php include 'main_menu.php' ?>
     <div class="container-fluid" style="min-height:cal(100% - 125px)">
+          <?= Session::displayMsg()?>
           <?= $this->content('body') ?>
     </div>
 

@@ -1,4 +1,6 @@
 <?php 
+phpinfo();
+die();
 $kun = 100;
 $somearray  = array('1','2','3','4');
 $conn = array(10,100,1000,10000);

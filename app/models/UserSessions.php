@@ -1,5 +1,12 @@
 <?php
+namespace App\Models;
+use Core\Session;
+use Core\Cookie;
+use Core\Model;
+
 class UserSessions extends Model{
+	
+	public $session_id,$user_id,$session,$user_agent;
 
 	public function __construct(){
 		$table = 'user_sessions';

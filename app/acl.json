@@ -11,6 +11,7 @@
     	},
 	    "Register" : ["logout"],
         "Contacts" : ["*"],
+        "Questions" : ["*"],
 	    "Tools" : ["*"]
 	}
 }

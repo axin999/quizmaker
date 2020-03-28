@@ -1,5 +1,7 @@
 <?php
-
+namespace Core;
+use \PDO;
+use \PDOException;
 class DB{
 	private static $_instance = null;
 	private $_pdo, $_query, $_error = false, $_results, $_count = 0, $_lastInserID = null;
@@ -15,34 +17,46 @@ class DB{
 	}
 	public static function getInstance(){
 		if(!isset(self::$_instance)){
-			self::$_instance = new DB();
+			self::$_instance = new self();
 		}
 		return self::$_instance;
 
 	}
-	public function query($sql, $params = []){
-		//dnd($params);
+	public function query($sql, $params = [], $class = false){
 		$this->_error = false;
 		if($this->_query = $this->_pdo->prepare($sql)){
-			$x = 1;
-			if(count($params)){
-				foreach($params as $param){
-					$this->_query->bindValue($x,$param);
-					$x++;
+
+			if(!empty($params)){
+				$x = 1;
+				if(count($params)){
+					foreach($params as $param){
+						$this->_query->bindValue($x,$param);
+						$x++;
+					}
 				}
 			}
+			//$checkquery = $this->_query;
+			//HP::dnd($checkquery);
+			//HP::dnl($params);
 			if($this->_query->execute()){
-				$this->_results = $this->_query->fetchALL(PDO::FETCH_OBJ);
+				if($class){
+					$this->_results = $this->_query->fetchALL(PDO::FETCH_CLASS,$class);
+
+				}else{
+					$this->_results = $this->_query->fetchALL(PDO::FETCH_OBJ);
+				}
 				$this->_count = $this->_query->rowCount();
 				$this->_lastInserID = $this->_pdo->lastInsertId();
 			}else{
 				$this->_error = true;
 			}
 		}
+		//HP::dnd($this);
 		return $this;
 	}
 
-	protected function _read($table, $params=[]){
+	protected function _read($table, $params=[], $class = ''){
+
 		$conditionString = '';
 		$bind = [];
 		$order ='';
@@ -51,7 +65,7 @@ class DB{
 		if(isset($params['conditions'])){
 			if (is_array(($params['conditions']))) {
 				foreach ($params['conditions'] as $condition) {
-					$condistion .= '' . $condition . ' AND ';
+					$conditionString .= ' ' . $condition . ' AND ';
 				}
 				$conditionString = trim($conditionString);
 				$conditionString = rtrim($conditionString,' AND ');
@@ -73,29 +87,46 @@ class DB{
 				$limit = ' LIMIT '. $params['limit'];
 			}
 			$sql = "SELECT * FROM {$table}{$conditionString}{$order}{$limit}";
-			//dnd($sql);
-			if($this->query($sql,$bind)){
-				if(!count($this->_results)) return false;
+			if($this->query($sql,$bind,$class)){
+				if(!count($this->_results)) {
+					return false;
+				}
 				return true;
 			}
 			return false;
+		}else{
+
+			$sql = "SELECT * FROM {$table}";
+			if($this->query($sql)){
+				if(!count($this->_results)) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
-	public function find($table, $params =[]){
-		if($this->_read($table,$params)){
+
+	public function all($table){
+		if($this->_read($table)){
+			return $this->results();		
+		}
+	}
+	public function find($table, $params = [],$class = false){
+		if($this->_read($table,$params,$class)){
 			return $this->results();
 		}
 		return false;
 	}
-	public function findFirst($table, $params=[]){
-		if($this->_read($table,$params)){
+	public function findFirst($table, $params= [],$class = false){
+		//$thisread = $this->_read($table,$params,$class);
+		if($this->_read($table,$params,$class)){
 			return $this->first();
 		}
 		return false;
 	}
 
 	public function insert($table, $fields = []){
-		//dnd($fields);
+		//HP::dnd($fields);
 		$fieldString ='';
 		$valueString = '';
 		$values = [];
@@ -108,7 +139,7 @@ class DB{
 		$fieldString = rtrim($fieldString,',');
 		$valueString = rtrim($valueString,',');
 		$sql = "INSERT INTO {$table} ({$fieldString}) VALUES ({$valueString})";
-		//dnd($sql);
+		//HP::dnd($sql);
 		if(!$this->query($sql,$values)->error()){
 			return true;
 		}

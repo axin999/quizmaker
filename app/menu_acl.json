@@ -4,6 +4,10 @@
 		"My Contacts" : "contacts",
 		"Add Contact" : "contacts/add"
 	},
+	"Quiz":{
+		"Question List" : "questions/index",
+		"Start Quiz" : "questions/quiz"
+	},
 	"Google" : "https://www.google.com",
 	"PHP Docs" : "http://php.net.manual/en",
 	"Login" : "register/login",

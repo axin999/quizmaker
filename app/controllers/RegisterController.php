@@ -1,6 +1,12 @@
 <?php
+namespace App\Controllers;
+use Core\Controller;
+use Core\Router;
+use App\Models\Users;
+use App\Models\Login;
+
 	class RegisterController extends Controller{
-		public function __construct(){
+		public function __construct($controller,$action){
 			parent::__construct($controller,$action);
 			$this->load_model('Users');
 			$this->view->setLayout('default');
@@ -8,94 +14,46 @@
 		}
 		public function loginAction(){
 			//echo password_hash('password',PASSWORD_DEFAULT);
-			$validation = new Validate();
-			if($_POST){
-				$validation->check($_POST,[
-					'username' => [
-						'display' => "Username",
-						'required' => true
-					],
-					'password' => [
-						'display' => 'Password',
-						'required' => true,
-						'min' => 3
-					]
-				]);
-				if($validation->passed()){
+			$loginModel = new Login();
+			if($this->request->isPost()){
+				$this->request->csrfCheck();
+				$loginModel->assign($this->request->get());
+				$loginModel->validator();
+				if($loginModel->validationPassed()){
+
 					$user = $this->UsersModel->findByUsername($_POST['username']);
-					if($user && password_verify(Input::get('password'),$user->password)){
-						$remember = ( isset($_POST['remember_me']) && Input::get('remember_me')) ? true : false;
+					if($user && password_verify($this->request->get('password'),$user->password)){
+						$remember = $loginModel->getRememberMechecked();
 						$user->login($remember);
-						Router::redirect('index2.php');
+						Router::redirect('home');
 					}else{
-					$validation->addError("There is an error with your username and password");
+						$loginModel->addErrorMessage("username","There is an error with your username and password");
 					}
 				}
 			}
-			$this->view->displayErrors = $validation->displayErrors();
+			$this->view->login = $loginModel;
+			$this->view->displayErrors = $loginModel->getErrorMessages();
 			$this->view->render('register/login');
 		}
 		public function logoutAction(){
-			if(currentUser()){
-				currentUser()->logout();
+			if(Users::currentUser()){
+				Users::currentUser()->logout();
 			}
 			Router::redirect('register/login');
 		}
 		public function registerAction(){
-			$validation = new Validate();
-			$posted_values = [
-				'fname'=>'',
-				'lname'=>'',
-				'username'=>'',
-				'email'=>'',
-				'password'=>'',
-				'confirmpass'=>''				
-			];
-			if($_POST){
-				$posted_values = posted_values($_POST);
-				$validation->check($_POST,[
-				'fname'=>[
-					'display'=>'First Name',
-					'required' => true
-				],
-				'lname'=>[
-					'display'=>'Last Name',
-					'required' => true
-				],
-				'username'=>[
-					'display'=>'username Name',
-					'required' => true,
-					'unique' => 'users',
-					'min' => 6,
-					'max' => 150
-				],
-				'email'=>[
-					'display'=>'Email',
-					'required' => true,
-					'unique' => 'users',
-					'max' => 150,
-					'valid_email' => true
-				],
-				'password'=>[
-					'display'=>'Password',
-					'required' => true,
-					'min' => 6
-				],
-				'confirmpass'=>[
-					'display' => 'Confirm Password',
-					'required' => true,
-					'matches' =>'password'
-				]				
-			]);
-				if($validation->passed()){
-					$newUser = new Users();
-					$newUser->registerNewUser($_POST);
+			$newUser = new Users();
+			if($this->request->isPost()){
+				$this->request->csrfCheck();
+				$newUser->assign($this->request->get());
+				$newUser->setConfirm($this->request->get('confirmpass'));
+				if($newUser->save()){
 					Router::redirect('register/login');
 				}
-			}
-			$this->view->post = $posted_values; // where did  this post property came from? find this out.
 
-			$this->view->displayErrors = $validation->displayErrors();
+			}
+			$this->view->newUser = $newUser;
+			$this->view->displayErrors = $newUser->getErrorMessages();
 			$this->view->render('register/register');
 		}
 	}
