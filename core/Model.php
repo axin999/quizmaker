@@ -4,17 +4,26 @@ namespace Core;
 class Model{
 	protected $_db, $_table, $_modelName, $_softDelete = false;
 	protected $_validates = true, $_validationErrors = [];
+	private $_query,$_bind;
 	//protected $table_id;
 	//public $id;
 
-	public function __construct($table){
+	public function __construct($table= ''){
 		$this->_db = DB::getInstance();
 		$this->_table = $table;
 		//$this->_modelName = ucwords($table);
 		$this->_modelName = str_replace(' ', '',ucwords(str_replace('_',' ',$this->_table)));
 		//dnd($this->_modelName);
 	}
+	//wala lang
+	public static function DB(){
+		return new self();
+	}
 
+	public function sample(){
+		$this->_query = "sample query";
+		return $this->_query;
+	}
 
 	public function get_columns(){
 		return $this->_db->get_columns($this->_table);
@@ -45,9 +54,43 @@ class Model{
 		return $resultsQuery;
 	}
 
-	public function all(){
-		$resultsQuery = $this->_db->all($this->_table);
-		return $resultsQuery;
+
+	public function all($otherparams =""){
+		$table = $this->_table;
+		$this->_query = "SELECT * FROM {$table} {$otherparams} ";
+		return $this;
+	}
+
+	public function select($params,$alias){
+		$table = $this->_table;
+		$this->_query .= "SELECT {$params} FROM {$table} AS {$alias}";
+		return $this;
+	}
+
+	public function join($table,$otherparams = ""){
+		$this->_query .= " JOIN {$table} {$otherparams}";
+		return $this;
+	}
+	public function leftJoin($table,$otherparams = ""){
+		$this->_query .= " LEFT JOIN {$table} {$otherparams}";
+		return $this;
+	}
+
+	public function rightJoin($table,$otherparams = ""){
+		$this->_query .= " RIGHT JOIN {$table} {$otherparams}";
+		return $this;
+	}
+
+	public function where($stringcondition,$operator,$bind = []){
+		$this->_bind = $bind;
+		$this->_query .= " WHERE {$stringcondition} {$operator} ?";
+		return $this;
+	}
+
+	public function get(){
+		//HP::dnd($this->_bind);
+		$result = $this->_db->all($this->_query,$this->_bind);
+		return $result;
 	}
 
 	public function findFirst($params = []){
@@ -88,11 +131,11 @@ class Model{
 		if(empty($fields)) return false;
 		return $this->_db->insert($this->_table, $fields);
 	}
-	public function update($id, $fields){
-	
+	public function update($id, $fields,$table = ''){
+		$tableToUpdate = (!empty($table)) ? $table : $this->_table;
 		if(empty($fields) || $id == '') return flase;
 
-		return $this->_db->update($this->_table,$id,$fields);
+		return $this->_db->update($tableToUpdate,$id,$fields);
 	}
 	public function delete($id =''){
 		if($id == '' && $this->id == '') return false;

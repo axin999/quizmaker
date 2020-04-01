@@ -46,7 +46,7 @@ class ContactsController extends Controller
 
 	public function editAction($id){
 		$contact = $this->ContactsModel->findByIdAndUserId((int)$id,Users::currentUser()->user_id);
-		if(!$contact) Router::redirect('contacts/edit');
+		if(!$contact) Router::redirect('contacts');
 		if($this->request->isPost()){
 			$this->request->csrfCheck();
 			$contact->assign($this->request->get());

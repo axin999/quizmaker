@@ -14,6 +14,22 @@ class FH
 		return $html;
 	}
 
+	public static function textArea($label, $name, $value = "", $inputAttribs =[], $divAttribs=[]){
+		$divString = self::strringifyAttribs($divAttribs);
+		$inputString = self::strringifyAttribs($inputAttribs);
+		$trimmed_name = rtrim($name,"[]");
+		$html  = '<div' . $divString . '>';
+		$html .= '<label for="'.$trimmed_name.'">'.$label.'</label>';
+		$html .= '<textarea id="'.$trimmed_name.'" name="'.$name.'" '.$inputString.' />'.$value.'</textarea>';
+		$html .= '</div>'; 
+		return $html;
+	}
+	public static function hiddenInput($idName,$value){
+		$trimmed_idName = rtrim($idName,"[]");
+		$html = ' <input type="hidden" id="'.$trimmed_idName.'" name="'.$idName.'" value="'.$value.'">';
+		return $html;
+	}
+
 	public static function submitTag($buttonText, $inputAtrribs = []){
 		$inputString = self::strringifyAttribs($inputAtrribs);
 		$html = '<input type="submit" value="'.$buttonText.'"'.$inputString.' />';
@@ -62,6 +78,9 @@ class FH
 	}
 
 	public static function sanitize($dirty){
+		if(is_array($dirty)){
+			return array_map('htmlentities', $dirty);
+		}
 		return htmlentities($dirty, ENT_QUOTES, 'UTF-8');
 	}
 
@@ -70,6 +89,7 @@ class FH
 		foreach ($post as $key => $value) {
 			$clean_ary[$key] = self::sanitize($value);
 		}
+		echo "na clean";
 		return $clean_ary;
 	}
 

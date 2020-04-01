@@ -61,7 +61,14 @@ namespace Core;
  	include ROOT. DS . 'app' .DS . 'views' . DS . $path . '.php';
  }
 public function partial($group, $partial){
-	include ROOT. DS . 'app' . DS . 'views' . DS . $group . DS . 'partials' .DS. $partial . '.php';
+	$file_path = ROOT. DS . 'app' . DS . 'views' . DS . $group . DS . 'partials';
+	if(file_exists($file_path)){
+		include ROOT. DS . 'app' . DS . 'views' . DS . $group . DS . 'partials' .DS. $partial . '.php';
+	}
+	else{
+		include ROOT. DS . 'app' . DS . 'views' . DS . $group . DS . 'forms' .DS. $partial . '.php';
+	}
+	
 }
 
  }

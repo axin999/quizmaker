@@ -106,11 +106,13 @@ class DB{
 		}
 	}
 
-	public function all($table){
-		if($this->_read($table)){
+
+	public function all($sql,$bind = []){
+		if($this->query($sql,$bind)){
 			return $this->results();		
 		}
 	}
+
 	public function find($table, $params = [],$class = false){
 		if($this->_read($table,$params,$class)){
 			return $this->results();
@@ -146,6 +148,16 @@ class DB{
 		return false;
 	}
 	public function update($table,$id,$fields = []){
+		//HP::dnd($fields);
+		if(is_array($id)){
+			$idKey = implode(array_keys($id));
+			$idVal = implode(array_values($id)); 
+		}
+		else{
+			$idKey = "id";
+			$idVal = $id;
+		}
+
 		$fieldString ='';
 		$values = [];
 		foreach ($fields as $field => $value) {
@@ -154,8 +166,8 @@ class DB{
 		}
 		$fieldString = trim($fieldString);
 		$fieldString = rtrim($fieldString,',');
-		$sql = "UPDATE {$table} SET {$fieldString} WHERE id = {$id}";
-		//dnd($sql);
+		$sql = "UPDATE {$table} SET {$fieldString} WHERE {$idKey} = {$idVal}";
+		//HP::dnd($sql);
 
 		if(!$this->query($sql,$values)->error()){
 			return true;

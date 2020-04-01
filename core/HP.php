@@ -40,4 +40,23 @@ class HP{
 	public static function getObjectProperties($obj){
 		return get_object_vars($obj);
 	}
+
+
+	public static function group_by($key,$data) {
+
+	if(array_filter($data,"is_object")){
+		$data = json_decode(json_encode($data), true);
+	}
+		
+    $result = array();
+    foreach($data as $val) {
+        if(array_key_exists($key, $val)){
+            $result[$val[$key]][] = $val;
+        }else{
+            $result[""][] = $val;
+        }
+    }
+
+    return $result;
+	}
 }

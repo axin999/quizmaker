@@ -1,5 +1,5 @@
 <?php
-namespace classes;
+//namespace classes;
 
 class Quiz extends Dbh{
 private $totalcorrectans;
