@@ -38,7 +38,7 @@ class HP{
 	}
 
 	public static function getObjectProperties($obj){
-		return get_object_vars($obj);
+		return self::filterProperties(get_object_vars($obj));
 	}
 
 
@@ -59,4 +59,24 @@ class HP{
 
     return $result;
 	}
+
+// filter variable that is not needed, working with sequential and associative array, but not for multidimensional array
+	public static function filterProperties($fields = []){
+		$propertiesToFilter = array('created_at','updated_at','lastinsertId');
+		foreach ($propertiesToFilter as $key) {
+			if(array_key_exists($key, $fields)) return array_diff_key($fields, array_flip($propertiesToFilter));
+		}
+		
+		if(!self::is_multi_array($fields)){
+			return array_diff($fields, $propertiesToFilter);
+		}else{
+			return $fields;
+		}
+			
+	}
+
+	public static function is_multi_array($arr) { 
+	    rsort($arr); 
+	    return isset($arr[0]) && is_array($arr[0]); 
+	} 
 }

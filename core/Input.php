@@ -31,7 +31,9 @@ class Input{
 	}
 
 	public function csrfCheck(){
-		if(!FH::checkToken($this->get('csrf_token'))) Router::redirect('restricted/badToken');
+		if(!FH::checkToken($this->get('csrf_token'))){ 
+			Router::redirect('restricted/badToken');		
+		}
 		return true;
 	}
 }

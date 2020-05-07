@@ -5,8 +5,12 @@
 		"Add Contact" : "contacts/add"
 	},
 	"Quiz":{
+		"My Quizes" : "quizes/myquizes",
+		"Create Quiz" : "quizes/create",
+		"Add Question" : "questions/add",
 		"Question List" : "questions/index",
-		"Start Quiz" : "questions/quiz"
+		"Question Types" : "QuestionTypes/index",
+		"Categories" : "categories/index"
 	},
 	"Google" : "https://www.google.com",
 	"PHP Docs" : "http://php.net.manual/en",

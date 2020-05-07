@@ -3,6 +3,7 @@ namespace Core;
 
  class View {
  	protected $_head, $_body, $_siteTitle = SITE_TITLE, $_outputBuffer, $_layout = DEFAULT_LAYOUT;
+ 	public $displayErrors;	// <-- added by me.
 
  	public function __construct()
  	{
@@ -60,15 +61,23 @@ namespace Core;
  public function insert($path){
  	include ROOT. DS . 'app' .DS . 'views' . DS . $path . '.php';
  }
-public function partial($group, $partial){
-	$file_path = ROOT. DS . 'app' . DS . 'views' . DS . $group . DS . 'partials';
-	if(file_exists($file_path)){
-		include ROOT. DS . 'app' . DS . 'views' . DS . $group . DS . 'partials' .DS. $partial . '.php';
-	}
-	else{
-		include ROOT. DS . 'app' . DS . 'views' . DS . $group . DS . 'forms' .DS. $partial . '.php';
-	}
+
+ public function partial($group, $partial){
+	$subpartials = explode("/", $partial);
 	
-}
+	if(count($subpartials)<=1){
+		$file_path = ROOT. DS . 'app' . DS . 'views' . DS . $group . DS . $partial;
+		if(file_exists($file_path)){
+			include ROOT. DS . 'app' . DS . 'views' . DS . $group . DS . $partial . '.php';
+		}				
+	}else{
+		$file_path = ROOT. DS . 'app' . DS . 'views' . DS . $group . DS;
+		foreach ($subpartials as $subs ) {
+			$file_path .= $subs. DS; 
+		}
+		$final_path = rtrim($file_path,DS) . '.php';
+		include $final_path;
+	}
+ }
 
  }

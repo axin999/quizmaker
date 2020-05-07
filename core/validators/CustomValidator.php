@@ -1,6 +1,6 @@
 <?php
 namespace Core\Validators;
-use \Exceprion;
+use \Exception;
 	abstract class CustomValidator{
 		public $success = true,$msg = '',$field,$rule;
 		protected $_model;

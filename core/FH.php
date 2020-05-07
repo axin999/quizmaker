@@ -4,22 +4,24 @@ use Core\Session;
 class FH 
 {
 
-	public static function inputBlock($type, $label, $name, $value = "", $inputAttribs =[], $divAttribs=[]){
-		$divString = self::strringifyAttribs($divAttribs);
+	public static function inputBlock($type, $label, $name, $value = "", $inputAttribs =[], $divAttribs=[],$labelAttribs=[]){
+		$divString = (!empty($divAttribs)) ? self::strringifyAttribs($divAttribs): "";
 		$inputString = self::strringifyAttribs($inputAttribs);
-		$html  = '<div' . $divString . '>';
-		$html .= '<label for="'.$name.'">'.$label.'</label>';
+		$labelString = self::strringifyAttribs($labelAttribs);
+		$html  = (!empty($divString)) ? '<div' . $divString . '>' : $divString;
+		$html .= '<label for="'.$name.'" "'.$labelString.'">'.$label.'</label>';
 		$html .= '<input type ="'.$type.'" id="'.$name.'" name="'.$name.'" value="'.$value.'"'.$inputString.' />';
-		$html .= '</div>'; 
+		$html .= (!empty($divString)) ? '</div>' : "";
 		return $html;
 	}
 
-	public static function textArea($label, $name, $value = "", $inputAttribs =[], $divAttribs=[]){
+	public static function textArea($label, $name, $value = "", $inputAttribs =[], $divAttribs=[],$labelAttribs=[]){
 		$divString = self::strringifyAttribs($divAttribs);
 		$inputString = self::strringifyAttribs($inputAttribs);
+		$labelString = self::strringifyAttribs($labelAttribs);
 		$trimmed_name = rtrim($name,"[]");
 		$html  = '<div' . $divString . '>';
-		$html .= '<label for="'.$trimmed_name.'">'.$label.'</label>';
+		$html .= '<label for="'.$trimmed_name.'" "'.$labelString.'">'.$label.'</label>';
 		$html .= '<textarea id="'.$trimmed_name.'" name="'.$name.'" '.$inputString.' />'.$value.'</textarea>';
 		$html .= '</div>'; 
 		return $html;
@@ -52,6 +54,14 @@ class FH
 		$html = '<div'.$divString.'>';
 		$html .= '<label for="'.$name.'">'.$label.'<input type="checkbox" id="'.$name.'" name="'.$name.'" value="on"'.$checkString.$inputString.'></label>';
 		$html .= '</div>';
+		return $html;
+	}
+
+	public static function button($name,$attribs=[]){
+		$stringAttribute = self::strringifyAttribs($attribs);
+		$html = '<button'.$stringAttribute.'>';
+		$html .= $name;
+		$html .= '</button>';
 		return $html;
 	}
 
@@ -94,6 +104,7 @@ class FH
 	}
 
 	public static function displayErrors($errors){
+	if(empty($errors)) return false;
 	$hasErrors = (!empty($errors)) ? ' has-errors' : '';
 	$html = '<div class="form-errors"><ul class="'.$hasErrors.'">';
 	$html .= '<ul class="'.$hasErrors.'">';

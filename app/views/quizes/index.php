@@ -2,6 +2,6 @@
 <?php $this->end(); ?>
 <?php $this->start('body'); ?>
 	<div class="fluid">
-		<?= $this->partial('questions','forms/form') ?>
+		<?= $this->partial('quizes','forms/prepare') ?>
 	</div>
 <?php $this->end(); ?>

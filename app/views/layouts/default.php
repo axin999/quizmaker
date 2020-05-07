@@ -11,7 +11,9 @@ use Core\Session;
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="<?= PROJECT_ROOT?>css/bootstrap/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="<?= PROJECT_ROOT?>css/custom.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
     <script src="<?=PROJECT_ROOT ?>js/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="<?=PROJECT_ROOT ?>js/sample.js"></script>
 
     <title><?= $this->setTitle(); ?></title>
     <?php $this->content('head') ?>

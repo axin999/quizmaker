@@ -4,9 +4,10 @@ namespace Core;
 class Model{
 	protected $_db, $_table, $_modelName, $_softDelete = false;
 	protected $_validates = true, $_validationErrors = [];
+	protected $_primaryKey = 'id'; 
 	private $_query,$_bind;
-	//protected $table_id;
-	//public $id;
+	public $lastinsertId;
+
 
 	public function __construct($table= ''){
 		$this->_db = DB::getInstance();
@@ -63,7 +64,10 @@ class Model{
 
 	public function select($params,$alias){
 		$table = $this->_table;
-		$this->_query .= "SELECT {$params} FROM {$table} AS {$alias}";
+		$this->_query .= "SELECT {$params} FROM {$table}";
+		if(!empty($alias)){
+			$this->_query .=" AS {$alias}";
+		}
 		return $this;
 	}
 
@@ -80,16 +84,19 @@ class Model{
 		$this->_query .= " RIGHT JOIN {$table} {$otherparams}";
 		return $this;
 	}
+	public function orderby($stringcondition){
+		$this->_query .= " ORDER BY {$stringcondition}";
+		return $this;
+	}
 
 	public function where($stringcondition,$operator,$bind = []){
 		$this->_bind = $bind;
-		$this->_query .= " WHERE {$stringcondition} {$operator} ?";
+		$this->_query .="WHERE {$stringcondition} {$operator} ?";
 		return $this;
 	}
 
 	public function get(){
-		//HP::dnd($this->_bind);
-		$result = $this->_db->all($this->_query,$this->_bind);
+		$result = $this->_db->all($this->_query,$this->_bind,get_class($this));
 		return $result;
 	}
 
@@ -97,7 +104,7 @@ class Model{
 		//HP::dnd($params);
 		$params = $this->_softDeleteParams($params);
 		//HP::dnd($params);
-		$resultsQuery = $this->_db->findFirst($this->_table,$params, get_class($this));
+		$resultsQuery = $this->_db->findFirst($this->_table,$params, get_class($this),$this->_primaryKey);
 		//HP::dnd($resultsQuery);
 		return $resultsQuery;
 	}
@@ -110,15 +117,16 @@ class Model{
 		if($this->_validates){
 			$this->beforeSave();
 			$fields = HP::getObjectProperties($this);
-			//HP::echonl($fields);
+			//HP::dnd($fields);
 			// determine wether update or insert
-			if(property_exists($this, 'id') && $this->id != ''){
-
-				$save = $this->update($this->id, $fields);
+			if(property_exists($this, $this->_primaryKey) && $this->{$this->_primaryKey} != ''){
+				$primaryKey_value = $this->{$this->_primaryKey};
+				$save = $this->update($primaryKey_value,$fields,$this->_table,$this->_primaryKey);
 				$this->afterSave();
 				return $save;
 			}else{
 				$save = $this->insert($fields);
+				$this->lastinsertId = $this->_db->_lastInsertID;
 				$this->afterSave();
 				return $save;
 			}
@@ -127,23 +135,33 @@ class Model{
 	}
 	
 	public function insert($fields){
-		//HP::dnd($fields);
+		//HP::dnl($fields);
 		if(empty($fields)) return false;
 		return $this->_db->insert($this->_table, $fields);
 	}
-	public function update($id, $fields,$table = ''){
-		$tableToUpdate = (!empty($table)) ? $table : $this->_table;
-		if(empty($fields) || $id == '') return flase;
 
-		return $this->_db->update($tableToUpdate,$id,$fields);
+	public function update($id, $fields,$table = '',$tablePK = "id"){
+		$this->validator();
+		if($this->_validates){
+			$tableToUpdate = (!empty($table)) ? $table : $this->_table;
+			if(empty($fields) || $id == '') return flase;
+
+			return $this->_db->update($tableToUpdate,$id,$fields,$tablePK);			
+		}
 	}
+
+	public function del($id = ''){
+		$pk = $this->_primaryKey;
+		return $this->_db->delete($this->_table, $this->{$pk},$pk);
+	}
+
 	public function delete($id =''){
-		if($id == '' && $this->id == '') return false;
-		$id = ($id == '') ? $this->id : $id;
+		if($id == '' && $this->{$this->_primaryKey} == '') return false;
+		$id = ($id == '') ? $this->{$this->_primaryKey} : $id;
 		if($this->_softDelete){
 			return $this->update($id, ['deleted' => 1]);
 		}
-		return $this->_db->delete($this->_table, $this->id);// !!!!!!! hey change this, you shoul determine the id field name of the table
+		return $this->_db->delete($this->_table, $id,$this->_primaryKey);// !!!!!!! hey change this, you shoul determine the id field name of the table
 
 	}
 	public function query($sql, $bind =[]){
@@ -160,7 +178,14 @@ class Model{
 		if(!empty($params)){
 			foreach ($params as $key => $value) {
 				if(property_exists($this, $key)){
-					$this->$key = $value;
+					if(is_array($value)){
+						foreach ($value as $val) {
+							$this->$key[] = $val;
+						}
+						
+					}else{
+						$this->$key = $value;
+					}
 				}
 			}
 			return true;			
@@ -177,6 +202,7 @@ class Model{
 	public function validator(){}
 
 	public function runValidation($validator){
+		//HP::dnd($validator);
 		$key = $validator->field;
 		if(!$validator->success){
 			$this->_validates = false;

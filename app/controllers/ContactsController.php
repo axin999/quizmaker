@@ -18,7 +18,7 @@ class ContactsController extends Controller
 		parent::__construct($controller,$action);
 		$this->view->setLayout('default');
 		$this->load_model('Contacts');
-		$this->_softDelete = true;
+		$this->_softDelete = false;
 	}
 
 	public function indexAction(){

@@ -4,7 +4,8 @@ use \PDO;
 use \PDOException;
 class DB{
 	private static $_instance = null;
-	private $_pdo, $_query, $_error = false, $_results, $_count = 0, $_lastInserID = null;
+	private $_pdo, $_query, $_error = false, $_results, $_count = 0; //$_lastInsertID = null;
+	public $_lastInsertID = null;
 
 	private function __construct(){
 		try{
@@ -15,9 +16,9 @@ class DB{
 
 		}
 	}
-	public static function getInstance(){
+	public static function getInstance($id = ''){
 		if(!isset(self::$_instance)){
-			self::$_instance = new self();
+			self::$_instance = new self($id);
 		}
 		return self::$_instance;
 
@@ -25,13 +26,23 @@ class DB{
 	public function query($sql, $params = [], $class = false){
 		$this->_error = false;
 		if($this->_query = $this->_pdo->prepare($sql)){
-
 			if(!empty($params)){
-				$x = 1;
-				if(count($params)){
-					foreach($params as $param){
-						$this->_query->bindValue($x,$param);
-						$x++;
+				foreach ($params as $key => $value) {
+					if(!is_array($value)){
+
+							$x = 1;
+							if(count($params)){
+								foreach($params as $param){
+									$this->_query->bindValue($x,$param);
+									$x++;
+								}
+							}
+						break;					
+						
+					}
+					elseif(is_array($value)){
+						if($this->_query->execute(array_values($value)));
+						if(array_key_last($params) == $key) return $this;								
 					}
 				}
 			}
@@ -46,16 +57,17 @@ class DB{
 					$this->_results = $this->_query->fetchALL(PDO::FETCH_OBJ);
 				}
 				$this->_count = $this->_query->rowCount();
-				$this->_lastInserID = $this->_pdo->lastInsertId();
+				$this->_lastInsertID = $this->_pdo->lastInsertId();
 			}else{
 				$this->_error = true;
 			}
+				
 		}
 		//HP::dnd($this);
 		return $this;
 	}
 
-	protected function _read($table, $params=[], $class = ''){
+	protected function _read($table, $params=[], $class = '',$primaryKey = "id"){
 
 		$conditionString = '';
 		$bind = [];
@@ -97,7 +109,9 @@ class DB{
 		}else{
 
 			$sql = "SELECT * FROM {$table}";
-			if($this->query($sql)){
+			if(!empty($params) && !is_array($params)) $sql .= " WHERE {$primaryKey} = {$params}";
+			var_dump($sql);
+			if($this->query($sql,null,$class,$primaryKey)){
 				if(!count($this->_results)) {
 					return false;
 				}
@@ -107,8 +121,9 @@ class DB{
 	}
 
 
-	public function all($sql,$bind = []){
-		if($this->query($sql,$bind)){
+	public function all($sql,$bind = [],$class = ''){
+		(!empty($class)) ? $class = $class : $class = get_class($this);
+		if($this->query($sql,$bind,$class)){
 			return $this->results();		
 		}
 	}
@@ -119,25 +134,36 @@ class DB{
 		}
 		return false;
 	}
-	public function findFirst($table, $params= [],$class = false){
+	public function findFirst($table, $params= [],$class = false,$primaryKey = "id"){
 		//$thisread = $this->_read($table,$params,$class);
-		if($this->_read($table,$params,$class)){
+		if($this->_read($table,$params,$class,$primaryKey)){
 			return $this->first();
 		}
 		return false;
 	}
 
 	public function insert($table, $fields = []){
-		//HP::dnd($fields);
+		//HP::dnl($fields);
+		$fields = HP::filterProperties($fields);// remove properties in get_obj_vars that should not be included.
 		$fieldString ='';
 		$valueString = '';
 		$values = [];
 
-		foreach ($fields as $field => $value) {
-			$fieldString .= "`". $field . "`,";
-			$valueString .= '?,';
-			$values[] = $value;
+		foreach ($fields as $field => $value) {				
+			if(!is_array($value)){
+				$fieldString .= "`". $field . "`,";
+				$valueString .= '?,';
+				$values[] = $value;
+
+			}
+			if(is_array($value)){
+				$fieldString = (implode(",", array_keys($value)));
+				$countValue = count($value);
+				$valueString = (implode(",", array_fill(0, $countValue, "?")));
+				$values[] = $value;		
+			}			
 		}
+
 		$fieldString = rtrim($fieldString,',');
 		$valueString = rtrim($valueString,',');
 		$sql = "INSERT INTO {$table} ({$fieldString}) VALUES ({$valueString})";
@@ -147,14 +173,14 @@ class DB{
 		}
 		return false;
 	}
-	public function update($table,$id,$fields = []){
+	public function update($table,$id,$fields = [],$primaryKey = "id"){
 		//HP::dnd($fields);
 		if(is_array($id)){
 			$idKey = implode(array_keys($id));
 			$idVal = implode(array_values($id)); 
 		}
 		else{
-			$idKey = "id";
+			$idKey = $primaryKey;
 			$idVal = $id;
 		}
 
@@ -176,8 +202,9 @@ class DB{
 		
 	}
 
-	public function delete($table,$id){
-		$sql = "DELETE FROM {$table} WHERE session_id = {$id}";
+	public function delete($table,$id,$pk = 'id'){
+		$sql = "DELETE FROM {$table} WHERE {$pk} = {$id}";
+				var_dump($sql);
 		if(!$this->query($sql)->error()){
 			return true;
 		}
@@ -203,5 +230,13 @@ class DB{
 	public function error(){
 			return $this->_error;
 	}
+	public function getTablePrimaryKey($table){
+		$sql = "SHOW KEYS FROM {$table} WHERE Key_name = :primary";
+		if($this->_query = $this->_pdo->prepare($sql)){
+			if($this->_query->execute(array(':primary'=>'PRIMARY'))){				
+				$result = $this->_query->fetchALL(PDO::FETCH_OBJ);
+				return ($result[0]->Column_name);
+			}
+		}
+	}
 }
-//INSERT INTO questions (`question`, `question_type`) VALUES ('asd', '1');

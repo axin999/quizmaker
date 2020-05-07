@@ -42,6 +42,7 @@ class Router{
 	public static function redirect($location){
 		if(!headers_sent()){
 			header('Location: '.PROJECT_ROOT.$location);
+			exit;
 		}else{
 			echo <<< EOT
 			<script type="text/javascript">

@@ -1,12 +1,25 @@
 <?php 
 use Core\FH;
+use Core\Router;
+use Core\HP;
+use App\Models\Users;
+
+  $menu = Router::getMenu('menu_acl');
+ //HP::dnd($menu);
 ?>
 <?php $this->start('head'); ?>
  <meta content="test">
 <?php $this->end(); ?>
 <?php $this->start('body'); ?>
-<?= FH::inputBlock('text','Favorite Color', 'favorite_color','', ['class'=>'form-control'] , ['class'=> 'form-group']); ?>
-<?= FH::submitBlock("Save", ['class' => 'btn btn-primary'], ['class'=>'float-right']); ?>
+<?= $this->partial('quizes','forms/prepare') ?>
+
+<!-- <div class="row h-100 w-100 justify-content-center align-items-center">
+	<div class="col-4 pt-5">
+		<?php foreach ($menu['Quiz'] as $key => $value): ?>
+			<a href="<?= $value ?>" class="btn btn-primary btn-lg btn-block p-4"><?= $key ?></a>
+		<?php endforeach;?>
+	</div>
+</div>	 -->
 <div onclick="ajaxTest()">Click Me</div>
 <script>
 	function ajaxTest(){

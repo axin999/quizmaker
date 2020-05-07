@@ -21,7 +21,7 @@ use Core\HP;
 			<a href="<?= PROJECT_ROOT?>questions/edit/<?= $value['question_id'] ?>" class="btn btn-info btn-xs">
 		 		<i class="glyphicon glypicon-pencil"></i>Edit
 		 	</a>
-		 	<a href="" class="btn btn-danger btn-xs" onclick="if(!confirm('Are you sure?')){return false;}">
+		 	<a href="<?= PROJECT_ROOT?>questions/delete/<?= $value['question_id'] ?>" class="btn btn-danger btn-xs" onclick="if(!confirm('Are you sure?')){return false;}">
 		 		<i class="glyphicon glypicon-remove"></i>Delete
 		 	</a>
 			</div>

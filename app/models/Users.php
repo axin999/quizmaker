@@ -15,7 +15,7 @@ use Core\Validators\UniqueValidator;
  * 
  */
 class Users extends Model{
-	private $_isLoggedIn, $_sessionName, $_cookieName, $_confirm;
+	private $_isLoggedIn=false,$_sessionName, $_cookieName, $_confirm;
 	public static $currentLoggedInUser = null;
 	public $user_id,$username,$email,$password,$fname,$lname,$acl,$deleted = 0;
 
@@ -76,6 +76,7 @@ class Users extends Model{
 	public function login($rememberMe = false){
 		
 		Session::set($this->_sessionName, $this->user_id);
+		Session::set("LoggedIn",true);
 		if($rememberMe){
 			//dnd($_POST['remember_me']);
 			$hash = md5(uniqid() + rand(0, 100));
@@ -86,6 +87,7 @@ class Users extends Model{
 			$this->_db->insert('user_sessions', $fields);
 		}
 	}
+
 
 	public static function loginUserFromCookie(){
 		$userSession = UserSessions::getFromCookie();
@@ -114,6 +116,7 @@ class Users extends Model{
 			Cookie::delete(REMEMBER_ME_COOKIE_NAME);
 		}
 		self::$currentLoggedInUser = null;
+		Session::delete("LoggedIn");
 		return true;
 	}
 

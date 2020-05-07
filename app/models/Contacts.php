@@ -15,7 +15,7 @@ use Core\validators\MaxValidator;
 		{
 			$table = 'contacts';
 			parent::__construct($table);
-			$this->_softDelete = true;
+			$this->_softDelete = false;
 		}
 
 		public function validator(){

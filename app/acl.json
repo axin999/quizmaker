@@ -12,6 +12,9 @@
 	    "Register" : ["logout"],
         "Contacts" : ["*"],
         "Questions" : ["*"],
+        "Quizes" : ["*"],
+        "Categories" : ["*"],
+        "QuestionTypes" : ["*"],
 	    "Tools" : ["*"]
 	}
 }
